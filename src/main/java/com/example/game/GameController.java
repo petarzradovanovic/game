@@ -3,6 +3,8 @@ package com.example.game;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 
 public class GameController {
@@ -15,7 +17,6 @@ public class GameController {
 
     @PostMapping("/play")
     public Long startGame(@RequestBody(required = false) Game game){
-        System.out.println(game);
         return gameService.startGame(game);
     }
 
@@ -25,12 +26,17 @@ public class GameController {
     }
 
     @PutMapping("/play")
-    public int updateGameStatus(@RequestBody Game game) throws Exception {
+    public boolean updateGameStatus(@RequestBody Game game) throws Exception {
         return gameService.updateGameStatus(game);
     }
 
     @DeleteMapping("/game")
     public boolean deleteGame(Game game) throws Exception {
         return gameService.deleteGame(game.getId());
+    }
+    @GetMapping("/search")
+    public List<Game> search(@RequestParam(required = false) String name,
+                             @RequestParam(required = false) String status){
+        return gameService.search(name, status);
     }
 }

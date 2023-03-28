@@ -6,12 +6,12 @@ import jakarta.persistence.Query;
 import org.springframework.http.*;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.util.LinkedMultiValueMap;
-import org.springframework.util.MultiValueMap;
+
 import org.springframework.web.client.RestTemplate;
 
+import java.util.ArrayList;
+import java.util.List;
 
-//INSERT INTO GAME VALUES(1,'2022-2-2','AA',2,'2022-2-2');
 @Service
 public class GameService {
 
@@ -26,11 +26,9 @@ public class GameService {
         ResponseEntity<String> responseEntity = null;
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
-        MultiValueMap<String,String> map = new LinkedMultiValueMap<>();
-        map.add("gameId", String.valueOf(game.getId()));
-        HttpEntity<MultiValueMap<String, String>> request = new HttpEntity<>(map,headers);
+        String body = "{\"gameId\":\""+game.getId()+"\"}";
+        HttpEntity<String> request = new HttpEntity<>(body,headers);
         try {
-            String body = "{\"gameId\":"+game.getId()+" }";
             responseEntity = restTemplate.postForEntity("http://localhost:8081/register", request, String.class);
         }catch (Exception e){e.printStackTrace();}
         return game.getId();
@@ -51,21 +49,16 @@ public class GameService {
     }
 
     @Transactional
-    public int updateGameStatus(Game game) throws Exception {
+    public boolean updateGameStatus(Game game) throws Exception {
         try {
             System.out.println(game);
-            return em.createQuery("UPDATE Game g"
-                            + " SET status = :status"
-                            + " WHERE g.id = :id", Game.class)
-                    .setParameter("id", game.getId())
-                    .setParameter("status", game.getStatus())
-                    .executeUpdate();
+            em.merge(game);
+            return true;
         } catch (Exception e) {
             e.printStackTrace();
             throw new Exception();
         }
     }
-
 
     @Transactional
     public boolean deleteGame(Long id) throws Exception {
@@ -75,12 +68,30 @@ public class GameService {
                         .setParameter("id", id);
 
                         if(q.executeUpdate()!=-1) return true;
-
             } catch (Exception e) {
                 e.printStackTrace();
                 throw new Exception();
             }
-
         return false;
+    }
+
+    @Transactional
+    public List<Game> search(String name, String status) {
+        try {
+            String query = "SELECT g" +
+                    " FROM Game g" +
+                    " WHERE ";
+            if(name != null) {
+                query = query + " name = '" + name + "'";
+            }
+            if(status != null) {
+                if(name != null) query = query + " AND ";
+                query = query + " status = '" + Game.Status.valueOf(status).ordinal() + "'";
+            }
+            return em.createQuery(query).getResultList();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return new ArrayList<>();
     }
 }
