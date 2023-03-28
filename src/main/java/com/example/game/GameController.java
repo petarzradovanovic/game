@@ -14,7 +14,8 @@ public class GameController {
     public boolean home() {return true;}
 
     @PostMapping("/play")
-    public int startGame(@RequestParam(required=false) Game game){
+    public Long startGame(@RequestBody(required = false) Game game){
+        System.out.println(game);
         return gameService.startGame(game);
     }
 
@@ -24,8 +25,8 @@ public class GameController {
     }
 
     @PutMapping("/play")
-    public int updateGameStatus(Game game) throws Exception {
-        return gameService.updateGameStatus(game.getId(), game.getStatus());
+    public int updateGameStatus(@RequestBody Game game) throws Exception {
+        return gameService.updateGameStatus(game);
     }
 
     @DeleteMapping("/game")

@@ -25,8 +25,8 @@ class GameApplicationTests {
 			game.setId(1L);
 			game.setName("game1");
 			game.setStatus(Game.Status.NEW);
-			int b = gameService.startGame(game);
-			assertEquals(1,b);
+			Long b = gameService.startGame(game);
+			assertEquals(1L,b);
 		} catch (NullPointerException e){
 			//e.printStackTrace();
 			System.out.println("AA");
@@ -54,7 +54,7 @@ class GameApplicationTests {
 	public void updateGameStatus_shouldUpdateGameStatus() throws Exception {
 		try{
 			Game game = gameService.getGameInfo(1L);
-			gameService.updateGameStatus(game.getId(), Game.Status.FINISHED);
+			gameService.updateGameStatus(game);
 			assertEquals(Game.Status.FINISHED, game.getStatus());
 		} catch (NullPointerException e) {
 			//e.printStackTrace();
