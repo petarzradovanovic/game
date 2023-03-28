@@ -1,10 +1,9 @@
-import com.example.game.Game;
+package com.example.game;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-
-
 
 public class GameController {
 
@@ -12,13 +11,11 @@ public class GameController {
     private GameService gameService;
 
     @GetMapping("/")
-    public boolean home() {
-        return gameService.home();
-    }
+    public boolean home() {return true;}
 
     @PostMapping("/play")
-    public boolean startGame(){
-        return gameService.startGame();
+    public int startGame(@RequestParam(required=false) Game game){
+        return gameService.startGame(game);
     }
 
     @GetMapping("/game")
@@ -27,12 +24,12 @@ public class GameController {
     }
 
     @PutMapping("/play")
-    public int updateGameStatus(Game game){
+    public int updateGameStatus(Game game) throws Exception {
         return gameService.updateGameStatus(game.getId(), game.getStatus());
     }
 
     @DeleteMapping("/game")
-    public boolean deleteGame(Game game){
+    public boolean deleteGame(Game game) throws Exception {
         return gameService.deleteGame(game.getId());
     }
 }
